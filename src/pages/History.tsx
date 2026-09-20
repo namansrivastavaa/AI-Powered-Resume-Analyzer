@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../AuthContext';
 import { HistoryItem } from '../types';
-import { Clock, FileText, BarChart2, Calendar } from 'lucide-react';
+import { Clock, FileText, BarChart2, Calendar, Sparkles } from 'lucide-react';
 
 export function History() {
   const { user } = useContext(AuthContext);
@@ -77,6 +77,11 @@ export function History() {
                 <div className="flex items-center gap-2 mb-2">
                   <FileText className="w-4 h-4 text-indigo-500" />
                   <h3 className="font-bold text-slate-800">{record.filename}</h3>
+                  {record.ai_insights && (
+                    <span className="flex items-center gap-1 text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-0.5 rounded-full">
+                      <Sparkles className="w-3 h-3" /> AI
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-4 text-xs text-slate-500">
                   <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(record.created_at).toLocaleDateString()}</span>
