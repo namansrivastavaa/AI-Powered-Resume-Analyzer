@@ -1,0 +1,8 @@
+{
+  "name": "Remix AI-Powered Resume Analyzer",
+  "description": "A beginner-friendly ATS and resume analysis system built with React, Node.js, and SQLite.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
