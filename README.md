@@ -90,6 +90,36 @@ The algorithm looks for the presence of specific keywords to determine if a sect
 
 ---
 
+## AI Insights Layer (Google Gemini)
+
+Alongside the heuristic scoring above, the app now includes an **optional semantic AI layer** powered by Google Gemini (`@google/genai`).
+
+### How it works
+1. When a resume is uploaded, the extracted text is sent to Gemini with a structured prompt.
+2. Gemini returns strict JSON (enforced via `responseSchema` + `responseMimeType: 'application/json'`) containing:
+   - `summary` — a 2–3 sentence overall assessment
+   - `skills` — the candidate's real skills, extracted semantically (no hardcoded list)
+   - `sections` — semantic detection of the six standard sections
+   - `strengths` / `improvements` — specific, actionable feedback grounded in the resume
+   - `jdMatch` — semantic job-description comparison: match %, matched/missing skills, reasoning (null when no JD is given)
+3. The result is stored in the `analyses.ai_insights` column and rendered in a dedicated **AI Insights** panel on the Dashboard. History cards that include AI results show an "AI" badge.
+
+### Fail-safe design
+- The heuristic ATS score always runs, with or without AI.
+- If `GEMINI_API_KEY` is missing, the layer is disabled and the Dashboard shows a hint explaining how to enable it.
+- If the API call fails or times out (30s guard), the upload still succeeds with heuristic results only.
+- The model defaults to `gemini-2.5-flash` and can be overridden with `GEMINI_MODEL`.
+
+### Setup
+1. Get a free API key from Google AI Studio: https://aistudio.google.com/apikey
+2. Create a `.env` file in the project root (it is gitignored — never commit it):
+   ```
+   GEMINI_API_KEY=your_key_here
+   ```
+3. Restart the server (`npm run dev`). You should see `AI insights layer enabled` in the console.
+
+---
+
 ## 5. Deployment Steps
 
 1. **Local Execution**:

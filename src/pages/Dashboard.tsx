@@ -1,6 +1,6 @@
 import React, { useState, useContext, useRef } from 'react';
 import { AuthContext } from '../AuthContext';
-import { UploadCloud, CheckCircle, XCircle, AlertCircle, FileText, ChevronRight } from 'lucide-react';
+import { UploadCloud, CheckCircle, XCircle, AlertCircle, FileText, ChevronRight, Sparkles } from 'lucide-react';
 import { AnalysisResult } from '../types';
 
 export function Dashboard() {
@@ -215,6 +215,111 @@ export function Dashboard() {
                     </ul>
                   </div>
                 </div>
+
+                {/* AI Insights Layer */}
+                {result.aiInsights ? (
+                  <div className="bg-white rounded-xl shadow-sm border border-indigo-200 p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-slate-800 font-bold text-sm flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-indigo-500" />
+                        AI Insights
+                      </h3>
+                      <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded font-medium italic">Gemini Semantic Analysis</span>
+                    </div>
+
+                    <p className="text-sm text-slate-600 mb-6 leading-relaxed">{result.aiInsights.summary}</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div>
+                        <p className="text-xs text-slate-400 uppercase font-semibold tracking-wide mb-3">Strengths</p>
+                        <ul className="space-y-2.5">
+                          {result.aiInsights.strengths.map((s, i) => (
+                            <li key={i} className="flex items-start gap-2.5 text-sm">
+                              <span className="w-5 h-5 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                              <span className="text-slate-700">{s}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-400 uppercase font-semibold tracking-wide mb-3">Improvements</p>
+                        <ul className="space-y-2.5">
+                          {result.aiInsights.improvements.map((s, i) => (
+                            <li key={i} className="flex items-start gap-2.5 text-sm">
+                              <span className="w-5 h-5 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">!</span>
+                              <span className="text-slate-700">{s}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    {result.aiInsights.skills.length > 0 && (
+                      <div className="mb-2">
+                        <p className="text-xs text-slate-400 uppercase font-semibold tracking-wide mb-2">Detected Skills</p>
+                        <div className="flex flex-wrap gap-2">
+                          {result.aiInsights.skills.map(skill => (
+                            <span key={skill} className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded text-xs border border-indigo-100">
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {result.aiInsights.jdMatch && (
+                      <div className="mt-6 pt-6 border-t border-slate-100">
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm font-medium text-slate-700">AI Job Match</span>
+                          <span className="text-sm font-bold text-indigo-600">{Math.round(result.aiInsights.jdMatch.matchPercentage)}%</span>
+                        </div>
+                        <div className="w-full h-2 bg-slate-100 rounded-full mb-3">
+                          <div className="h-full bg-indigo-600 rounded-full transition-all duration-1000" style={{ width: `${result.aiInsights.jdMatch.matchPercentage}%` }}></div>
+                        </div>
+                        <p className="text-xs text-slate-500 leading-relaxed mb-3">{result.aiInsights.jdMatch.reasoning}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {result.aiInsights.jdMatch.matchedSkills.length > 0 && (
+                            <div>
+                              <p className="text-xs text-slate-400 uppercase font-semibold tracking-wide mb-2">Matched</p>
+                              <div className="flex flex-wrap gap-2">
+                                {result.aiInsights.jdMatch.matchedSkills.map(skill => (
+                                  <span key={skill} className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded text-xs border border-emerald-100">
+                                    {skill}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {result.aiInsights.jdMatch.missingSkills.length > 0 && (
+                            <div>
+                              <p className="text-xs text-slate-400 uppercase font-semibold tracking-wide mb-2">Missing</p>
+                              <div className="flex flex-wrap gap-2">
+                                {result.aiInsights.jdMatch.missingSkills.map(skill => (
+                                  <span key={skill} className="px-3 py-1 bg-rose-50 text-rose-600 rounded text-xs border border-rose-100">
+                                    {skill}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : !result.aiEnabled ? (
+                  <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center">
+                    <Sparkles className="w-6 h-6 text-slate-300 mx-auto mb-2" />
+                    <p className="text-sm font-medium text-slate-500">AI insights are turned off</p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Add <code className="bg-slate-100 px-1 rounded">GEMINI_API_KEY</code> to your <code className="bg-slate-100 px-1 rounded">.env</code> file
+                      and restart the server to enable semantic analysis.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-700">
+                    AI analysis failed for this upload — showing heuristic results only.
+                  </div>
+                )}
 
                 {/* JD Match Percentage */}
                 {result.matchPercentage !== null && (
